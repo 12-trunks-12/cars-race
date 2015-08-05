@@ -8,27 +8,37 @@ import coche
 import menu
 from mapa import Mapa
 import perfil
+from funciones import iniciar_datos_jugador
 
+import time
 #====================================
 #     ---------JUEGO---------
 #====================================
 pygame.init()
 def juego(surface, fps_clock):
-    pausa = False
+    """ Hace funcionar el juego en si, empezando la carrera"""
 
     jugador1 = coche.Coche(perfil.coche_j1)  # Nombre, velocidad máxima, aceleración, turbo, manejo, frenada
-    jugador1.rect.x, jugador1.rect.y = (640, 35)
-
     jugador2 = coche.Coche(perfil.coche_j2)  # Nombre, velocidad máxima, aceleración, turbo, manejo, frenada
-    jugador2.rect.x, jugador2.rect.y = (640, 75)
+
+    iniciar_datos_jugador(jugador1, str(perfil.coche_j1), (640, 35))
+    iniciar_datos_jugador(jugador2, str(perfil.coche_j2), (640, 75))
+
+    pausa = False  # Indica si el juego está en pausa o no
 
     mapa = Mapa()
-    mapa.crear(1)
+    mapa.crear(1)  # Creamos el mapa según el nivel seleccionado
 
+    #================================BUCLE============================
     while True:
-        if pausa == True:
-            pausa = False
-            menu.menu_pausa(surface, fps_clock)
+        if pausa == True:  # Si el juego está en pausa
+            pausa = False  # False para que una vez cerrada la función de menu_pausa el juego no siga en pausa
+            jugador1.corriendo, jugador1.frenando, jugador1.girando, jugador1.turbeando = False, False, False, False
+            jugador2.corriendo, jugador2.frenando, jugador2.girando, jugador2.turbeando = False, False, False, False
+            salir = menu.menu_pausa(surface, fps_clock)  # Activamos el menú de pausa, que devuelve True si se le da a salir
+            if salir == True:  # Si volvió al menú principal
+                iniciar_datos_jugador(jugador1, str(perfil.coche_j1), (640, 35))
+                iniciar_datos_jugador(jugador2, str(perfil.coche_j2), (640, 75))
 
         for event in pygame.event.get():
             tecla_pulsada = pygame.key.get_pressed()
@@ -115,15 +125,13 @@ def juego(surface, fps_clock):
                         jugador2.girando = 'derecha'
 
 
-        #------------------Calculamos datos y variables
+        #------------------Calculamos datos y variables (actualizamos la posición de cada jugador, la ajustamos si es necesario y cambiamos la imagen)
         jugador1.actualizar_movimiento()
         jugador2.actualizar_movimiento()
 
         #================================UPDATE============================
-        surface.fill((0, 0, 0))
-
         #------------------Mapa
-        mapa.dibujar(surface)
+        mapa.dibujar(surface)  # Dibujamos el mapa en el surface
 
         #------------------Coches
         surface.blit(jugador1.image, (jugador1.rect.x, jugador1.rect.y))
