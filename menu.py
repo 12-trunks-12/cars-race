@@ -9,15 +9,25 @@ import tutorial
 #====================================
 #     ---------MENÚS---------
 #====================================
+pygame.mixer.pre_init(22050, -16, 10, 4096)
 pygame.init()
 
 def menu_inicio(surface, fps_clock):
     """ Menú que hay al inicio del juego (menú principal) """
+
+    #-Cargamos la imagen de fondo
     imagen_fondo = pygame.image.load("imagenes/wallpaper.png")  # Fondo del menú principal
 
+    #-Creamos variables y cargamos fonts para el menú
     opcion_menu = 0  # Contador para saber que opción se está seleccionado (JUGAR, TIENDA, SALIR)
     font_pequeña = pygame.font.Font("Xperia.TTF", 60)  # Font para las opciones no seleccionadas
     font_grande = pygame.font.Font("Xperia.TTF", 90)  # Font para la opción seleccionada
+
+    #-Cargamos la música
+   # musica = pygame.mixer.music
+    #musica.load("Sonidos/Sonido Hangar.mp3")  # Música de fondo
+   # musica.set_volume(0.6)  # Ajustamos el volumen
+   # musica.play(-1)
 
     #================================BUCLE============================
     while True:
@@ -111,8 +121,11 @@ def menu_inicio(surface, fps_clock):
 
 def menu_pausa(surface, fps_clock):
     """ Menú que hay cuando pausas el juego estando en medio de una carrera """
+
+    #-Cargamos la imagen de fondo
     imagen_fondo = pygame.image.load("imagenes/wallpaper_pausa.png")  # Imagen de fondo del menú
 
+    #-Creamos variables y cargamos fonts para el menú
     opcion_menu = 0  # Contador que dice si estás marcando REANUDAR o SALIR
     font_pequeña = pygame.font.Font("Xperia.TTF", 60)  # Font para la opción seleccionada
     font_grande = pygame.font.Font("Xperia.TTF", 90)  # Font para la opción no seleccionada

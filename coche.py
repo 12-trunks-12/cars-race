@@ -4,7 +4,7 @@
 import pygame, sys
 from pygame.locals import *
 from constantes import *
-from funciones import crear_imagenes_coches
+from funciones import crear_imagenes_coches, iniciar_datos_jugador
 #====================================
 #     ---------COCHE---------
 #====================================
@@ -29,16 +29,9 @@ class Coche(pygame.sprite.Sprite):
         self.girando = False  # Cuando estás girando
         self.turbeando = False  # Verbo inventado xD, y significa que se está usando el turbo
 
-
-        # velocidad_max: Velocidad máxima a la que puede llegar a correr el coche
-        # aceleracion: Cuanto más alto menos tarda en alcanzar la velocidad máxima
-        # turbo: Velocidad extra
-        # manejo: Capacidad para girar más en el menor tiempo posible
-        # frenada: Capacidad para frenar más en menos tiempo
-        self.velocidad_max, self.aceleracion, self.turbo, self.manejo, self.frenada = self.clases_coches[tipo_coche]
         self.velocidad = 0  # Velocidad a la que está corriendo el coche
 
-    def actualizar_movimiento(self):
+    def actualizar_movimiento(self, tiles_hierba):
         """ Calculamos su nueva posición, la ajustamos si es necesario y actualizamos la imagen"""
 
         #------------------Calcular datos y cambiar variables (la velocidad, la posicion del coche...)
@@ -61,6 +54,10 @@ class Coche(pygame.sprite.Sprite):
 
         if self.velocidad < 0.5 and self.velocidad > -0.5:  # Parar el coche, en caso de que al sumar o reducir queden número decimales
             self.velocidad = 0
+
+        for tile in tiles_hierba:  # Comprobamos si está encima de la hierba
+            if self.rect.x > tile[0] and self.rect.x < tile[0]+10 and self.rect.y > tile[1] and self.rect.y < tile[1]+10 and self.corriendo == True:  # Si lo está encima y sigue corriendo
+                self.velocidad = 5  # Se le reduce la velocidad a 5
 
         #--Giros del coche
         if self.velocidad != 0 and self.turbeando == False:  # Si se está moviendo y no está usando el turbo

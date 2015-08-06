@@ -10,35 +10,57 @@ from mapa import Mapa
 import perfil
 from funciones import iniciar_datos_jugador
 
-import time
 #====================================
 #     ---------JUEGO---------
 #====================================
+pygame.mixer.pre_init(22050, -16, 10, 4096)
 pygame.init()
+
 def juego(surface, fps_clock):
     """ Hace funcionar el juego en si, empezando la carrera"""
 
+    #-Creamos los jugadores e inicializamos los datos
     jugador1 = coche.Coche(perfil.coche_j1)  # Nombre, velocidad máxima, aceleración, turbo, manejo, frenada
     jugador2 = coche.Coche(perfil.coche_j2)  # Nombre, velocidad máxima, aceleración, turbo, manejo, frenada
 
-    iniciar_datos_jugador(jugador1, str(perfil.coche_j1), (640, 35))
-    iniciar_datos_jugador(jugador2, str(perfil.coche_j2), (640, 75))
+    iniciar_datos_jugador(jugador1, perfil.coche_j1, (640, 35))
+    iniciar_datos_jugador(jugador2, perfil.coche_j2, (640, 75))
 
-    pausa = False  # Indica si el juego está en pausa o no
-
+    #-Creamos el mapa
     mapa = Mapa()
     mapa.crear(1)  # Creamos el mapa según el nivel seleccionado
+
+    tiles_hierba = mapa.dibujar(surface)
+
+    #-Cargamos la música
+    sonido_motor_j1 = pygame.mixer.Sound("Sonidos/Sonido Motor.wav")  # Cargamos el sonido de un motor
+    sonido_motor_j1.play()
+    sonido_motor_j1.set_volume(0)  # Ponemos el volumen a 0, pues está condicionado por la velocidad del coche (empieza a 0)
+
+    sonido_motor_j2 = pygame.mixer.Sound("Sonidos/Sonido Motor.wav")  # Cargamos el sonido de un motor
+    sonido_motor_j2.play()
+    sonido_motor_j2.set_volume(0)  # Ponemos el volumen a 0, pues está condicionado por la velocidad del coche (empieza a 0)
+
+    #-Creamos algunas variables
+    pausa = False  # Indica si el juego está en pausa o no
 
     #================================BUCLE============================
     while True:
         if pausa == True:  # Si el juego está en pausa
+            sonido_motor_j1.stop()
+            sonido_motor_j2.stop()
+
             pausa = False  # False para que una vez cerrada la función de menu_pausa el juego no siga en pausa
             jugador1.corriendo, jugador1.frenando, jugador1.girando, jugador1.turbeando = False, False, False, False
             jugador2.corriendo, jugador2.frenando, jugador2.girando, jugador2.turbeando = False, False, False, False
+
             salir = menu.menu_pausa(surface, fps_clock)  # Activamos el menú de pausa, que devuelve True si se le da a salir
             if salir == True:  # Si volvió al menú principal
-                iniciar_datos_jugador(jugador1, str(perfil.coche_j1), (640, 35))
-                iniciar_datos_jugador(jugador2, str(perfil.coche_j2), (640, 75))
+                iniciar_datos_jugador(jugador1, perfil.coche_j1, (640, 35))
+                iniciar_datos_jugador(jugador2, perfil.coche_j2, (640, 75))
+            else:
+                sonido_motor_j1.play()
+                sonido_motor_j2.play()
 
         for event in pygame.event.get():
             tecla_pulsada = pygame.key.get_pressed()
@@ -125,9 +147,20 @@ def juego(surface, fps_clock):
                         jugador2.girando = 'derecha'
 
 
-        #------------------Calculamos datos y variables (actualizamos la posición de cada jugador, la ajustamos si es necesario y cambiamos la imagen)
-        jugador1.actualizar_movimiento()
-        jugador2.actualizar_movimiento()
+        #------------------Calculamos datos y variables y aplicamos sonidos (actualizamos la posición de cada jugador, la ajustamos si es necesario y cambiamos la imagen)
+        #-Jugador 1
+        jugador1.actualizar_movimiento(tiles_hierba)  # Actualizamos los datos
+        if jugador1.velocidad > 0:  # Si la velocidad es mayor que 0
+            sonido_motor_j1.set_volume(jugador1.velocidad/100)
+        else:  # Si la velocidad es menor que 0
+            sonido_motor_j1.set_volume(jugador1.velocidad*-1/100)
+
+        #-Jugador 2
+        jugador2.actualizar_movimiento(tiles_hierba)  # Actualizamos los datos
+        if jugador2.velocidad > 0:  # Si la velocidad es mayor que 0
+            sonido_motor_j2.set_volume(jugador2.velocidad/100)
+        else:  # Si la velocidad es menor que 0
+            sonido_motor_j2.set_volume(jugador2.velocidad*-1/100)
 
         #================================UPDATE============================
         #------------------Mapa
@@ -138,7 +171,7 @@ def juego(surface, fps_clock):
         surface.blit(jugador2.image, (jugador2.rect.x, jugador2.rect.y))
 
         #------------------Marcadores
-
+        # Para la versión 2.0
 
         #------------------Update, FPS
         pygame.display.update()

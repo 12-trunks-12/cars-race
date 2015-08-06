@@ -7,8 +7,6 @@ from constantes import *
 import perfil
 from boton import Boton
 from funciones import crear_carta
-
-import time
 #====================================
 #     ---------MAPA---------
 #====================================
@@ -16,11 +14,20 @@ pygame.init()
 def tienda(surface, fps_clock):
     """ Hace funcionar la tienda, donde se puede seleccionar el coche que se quiera para jugar """
 
+    #-Cargamos la imagen de fondo
     imagen_fondo = pygame.image.load("imagenes/wallpaper_tienda.png")  # Imagen del fondo de la tienda
 
+    #-Cargamos las fonts para el texto de salir
     font_pequeña = pygame.font.Font("Xperia.TTF", 30)  # Font para cuando la opción de salir al menú principal no esté seleccionada
     font_grande = pygame.font.Font("Xperia.TTF", 40)  # Font para cuando la opción de salir al menú principal esté seleccionada
 
+    #-Cargamos la música
+    musica = pygame.mixer.music
+    musica.load("Sonidos/Sonido Hangar.mp3")  # Música de fondo
+    musica.set_volume(0.6)  # Ajustamos el volumen
+    musica.play(-1)
+
+    #-Cargamos algunas imágenes para los marcadores de cada jugador
    # marcador_dinero_j1 = pygame.image.load("imagenes/marcador_dinero.png")  # Cantidad de dinero del J1
    # marcador_dinero_j2 = pygame.transform.flip(1, 0)  # Cantidad de dinero del J2
    # imagen_dinero = pygame.image.load("imagenes/dinero.png")  # Imagen de una moneda
@@ -53,6 +60,7 @@ def tienda(surface, fps_clock):
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if (event.pos[0] > 268 and event.pos[0] < 1010) and (event.pos[1] > 648 and event.pos[1] < 690) and opcion_salir == True:
+                    musica.pause()
                     return  # Vuelve al menú principal
 
                 #------------------Botones asignar coches
@@ -71,6 +79,7 @@ def tienda(surface, fps_clock):
 
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
+                    musica.pause()
                     return  # Vuelve al menú principal
 
 

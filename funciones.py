@@ -46,11 +46,18 @@ def crear_carta(surface, pos_x, pos_y, imagen_coche, velocidad_max, aceleracion,
     surface.blit(texto_frenada, (pos_x+62, pos_y+205))
 
 
-def iniciar_datos_jugador(jugador, imagen, pos):
+def iniciar_datos_jugador(jugador, tipo_coche, pos):
     """ Establecemos los datos de inicio de los jugadores (imagen, posición y velocidad) """
 
+    # velocidad_max: Velocidad máxima a la que puede llegar a correr el coche
+    # aceleracion: Cuanto más alto menos tarda en alcanzar la velocidad máxima
+    # turbo: Velocidad extra
+    # manejo: Capacidad para girar más en el menor tiempo posible
+    # frenada: Capacidad para frenar más en menos tiempo
+    jugador.velocidad_max, jugador.aceleracion, jugador.turbo, jugador.manejo, jugador.frenada = jugador.clases_coches[tipo_coche]
+
     jugador.posicion_imagen = 270
-    jugador.images = crear_imagenes_coches(jugador, imagen)
+    jugador.images = crear_imagenes_coches(jugador, str(tipo_coche))
     jugador.rect.x, jugador.rect.y = pos
     jugador.velocidad = 0
 
